@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -54,6 +55,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+        Log.d(TAG, "start post gps");
+        OKHttp okHttp = new OKHttp();
+        try {
+            okHttp.post(getResources().getString(R.string.respondGPSUrl),
+                    FirebaseInstanceId.getInstance().getToken(),
+                    GetUserLocation.getMylocation(this).getMyLatLng().longitude + "",
+                    GetUserLocation.getMylocation(this).getMyLatLng().latitude + "");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        Log.d(TAG, "end post gps");
     }
     // [END receive_message]
 

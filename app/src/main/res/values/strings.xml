@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">FCMTestForDevice</string>
-    <string name="respondGPSUrl">http://127.0.0.1:8081/FCMNotification/webSite/SendMessage/respondGPS</string>
+    <string name="respondGPSUrl">http://192.168.56.1:8081/FCMNotification/webSite/SendMessage/respondGPS</string>
 </resources>

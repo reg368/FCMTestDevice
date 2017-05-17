@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(tokenReceiver,
                 new IntentFilter("tokenReceiver"));
+        //初始化lotcation
+        GetUserLocation.getMylocation(this);
 
     }
 
