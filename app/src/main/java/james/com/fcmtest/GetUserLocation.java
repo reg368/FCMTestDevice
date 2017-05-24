@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by R30 on 2015/11/30.
  */
-public class GetUserLocation implements
+public class GetUserLocation  implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private GoogleApiClient googleApiClient;

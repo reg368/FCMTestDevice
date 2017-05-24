@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //啟動LocationPostService背景服務
+        Intent intent = new Intent(MainActivity.this, LocationPostService.class);
+        startService(intent);
+
     }
 
     //voice dialog result

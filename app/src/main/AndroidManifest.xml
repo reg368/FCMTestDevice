@@ -33,6 +33,11 @@
            </intent-filter>
        </service>
         -->
+        <service
+            android:name="james.com.fcmtest.LocationPostService"
+            android:enabled="true" />
+
+
    </application>
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
