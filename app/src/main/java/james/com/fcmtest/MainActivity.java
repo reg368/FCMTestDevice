@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.LocalBroadcastManager;
@@ -13,22 +15,28 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     static final int check = 111;
     private SpeechRecognizer recognizer;
+    private TextView info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        info = (TextView)findViewById(R.id.info);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(tokenReceiver,
                 new IntentFilter("tokenReceiver"));
@@ -51,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
         recognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
-        recognizer.setRecognitionListener(new MyRecognizerListener());
+        recognizer.setRecognitionListener(new MyRecognizerListener(this,getPhoneBookInfo(),this.info));
 
-        //voice dialog
+        //voice
         Button voice = (Button)findViewById(R.id.btnVoice);
 
         voice.setOnTouchListener(new View.OnTouchListener(){
@@ -61,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
+                info.setText("");
+
                 if(event.getAction() == MotionEvent.ACTION_DOWN)
                 {
                     ((Button) v).setPressed(true);
@@ -73,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;//Return true, so there will be no onClick-event
             }
         });
-
 
     }
 
@@ -110,6 +120,36 @@ public class MainActivity extends AppCompatActivity {
             recognizer.stopListening();
             recognizer.destroy();
         }
+    }
+
+    //取得手機電話簿(sim 卡)通訊綠 Map<聯絡人名稱,聯絡人電話>
+    private Map<String,String> getPhoneBookInfo(){
+
+        Map<String,String> phoneMap = new HashMap<String,String>();
+
+        Cursor cursor = getContentResolver().query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        while(cursor.moveToNext()){
+
+            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            if(Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0){
+                Cursor pCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
+                while (pCur.moveToNext())
+                {
+                    String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    phoneMap.put(name,contactNumber);
+                    break;
+                }
+                pCur.close();
+            }
+        }
+        return  phoneMap;
     }
 
 }
