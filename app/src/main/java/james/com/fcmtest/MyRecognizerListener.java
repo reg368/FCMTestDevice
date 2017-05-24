@@ -43,43 +43,49 @@ public class MyRecognizerListener implements RecognitionListener {
 
             info.setText("");
 
-            for(String result : resList){
-                Log.d(TAG,"result : "+ result);
-                info.append(result+"\n");
-            }
+            for(String task : resList){
+                Log.d(TAG,"result : "+ task);
+                info.append(task+"\n");
 
-            //只取得第一個辨識度最高的字
-            String task = resList.get(0);
-            Log.d(TAG, "first one of full recognizer text : " + task);
-            info.append("first one of full recognizer text : " + task+"\n");
+                //使用者說出"打電話給...."關鍵字
+                if (task.startsWith("打電話給") && task.length() > 4) {
+                    String name = task.substring(4);
+                    Log.d(TAG, "recognizer name : " + name);
+                    info.append("recognizer name : " + name+"\n");
 
-            //使用者說出"打電話給...."關鍵字
-            if (task.startsWith("打電話給") && task.length() > 4) {
-                String name = task.substring(4);
-                Log.d(TAG, "recognizer name : " + name);
-                info.append("recognizer name : " + name+"\n");
+                    //取得使用者電話 from map (key contact user name ; value phone number)
+                    String number = this.phoneMap.get(name);
 
-                //取得使用者電話 from map (key contact user name ; value phone number)
-                String number = this.phoneMap.get(name);
+                    if(number != null){
 
-                if(number != null){
-                    Log.d(TAG, "Start make phone calling user : "+name+",  number : "+number);
-                    info.append("Start make phone calling user : "+name+",  number : "+number+"\n");
+                        Log.d(TAG, "Get user :"+name+" , number : "+number);
+                        info.append("Get user :"+name+" , number : "+number+"\n");
 
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + number));
-                    if (ActivityCompat.checkSelfPermission(this.context, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "CALL PERMISSION_GRANTED FAIL");
-                        info.append("CALL PERMISSION_GRANTED FAIL"+"\n");
-                        return;
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + number));
+                        if (ActivityCompat.checkSelfPermission(this.context, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            Log.d(TAG, "CALL PERMISSION_GRANTED FAIL");
+                            info.append("CALL PERMISSION_GRANTED FAIL"+"\n");
+                            break;
+                        }else{
+                            Log.d(TAG, "Start make phone calling user : "+name+",  number : "+number);
+                            info.append("Start make phone calling user : "+name+",  number : "+number+"\n");
+                            this.context.startActivity(intent);
+                            Log.d(TAG, "phone call user "+name+" done , ending process");
+                            info.append("phone call user "+name+" done , ending process"+"\n");
+                            break;
+                        }
+
                     }else{
-                        this.context.startActivity(intent);
+                        Log.d(TAG, "Contact user "+name+" does not exist");
+                        info.append("Contact user "+name+" does not exist"+"\n");
+                        continue;
                     }
-                }else{
-                    Log.d(TAG, "Contact user does not exist");
-                    info.append( "Contact user does not exist"+"\n");
                 }
+
             }
+
+
         }
 
     }
