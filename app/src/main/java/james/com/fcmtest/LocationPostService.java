@@ -1,10 +1,15 @@
 package james.com.fcmtest;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,6 +22,7 @@ public class LocationPostService extends Service {
     private GetUserLocation location;
     private static final String TAG = "LocationPostService";
     private Timer timer;
+    private LocationPostService context;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -27,15 +33,30 @@ public class LocationPostService extends Service {
             public void run() {
                 Log.d(TAG,"LocationPostService Service running start");
                 if(location != null && location.getMyLatLng() != null ) {
-                        Log.d(TAG," Latitude 緯度 : "+location.getMyLatLng().latitude+" : " +
-                                "  經度 longitude :  "+location.getMyLatLng().longitude);
+
+                    Log.d(TAG,"post lat : "+location.getMyLatLng().latitude+
+                            " , long "+location.getMyLatLng().longitude+
+                    "mac : "+GetDeviceMacAddress.getMacAddress(context));
+
+                    try{
+                        JSONObject json = new JSONObject();
+                        json.put("device_id",GetDeviceMacAddress.getMacAddress(context));
+                        json.put("lng",location.getMyLatLng().longitude);
+                        json.put("lat",location.getMyLatLng().latitude);
+                        OKHttp http = new OKHttp();
+                        String result = http.post(getResources().getString(R.string.add_posUrl),json.toString());
+                        Log.d(TAG," register result : "+result);
+                    }catch(Exception e){
+                        Log.d(TAG," post exception "+e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
                 Log.d(TAG,"LocationPostService Service running end");
             }
         };
 
         timer = new Timer();
-        timer.schedule(timerTask,3000,5000);
+        timer.schedule(timerTask,10000,10000);
         return START_STICKY;
     }
 
@@ -43,6 +64,7 @@ public class LocationPostService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG,"onCreate");
+        context = this;
         location = new GetUserLocation(this);
     }
 

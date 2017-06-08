@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MyDevice</string>
     <string name="respondGPSUrl">http://192.168.56.1:8081/FCMNotification/webSite/SendMessage/respondGPS</string>
+    <string name="add_posUrl">http://140.138.152.68:5000/api/v1/add_pos</string>
+    <string name="add_callUrl">http://140.138.152.68:5000/api/v1/add_call</string>
+    <string name="add_batteryUrl">http://140.138.152.68:5000/api/v1/add_bettary</string>
 </resources>

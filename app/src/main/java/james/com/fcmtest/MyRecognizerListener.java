@@ -12,6 +12,9 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +71,28 @@ public class MyRecognizerListener implements RecognitionListener {
                             info.append("CALL PERMISSION_GRANTED FAIL"+"\n");
                             break;
                         }else{
+
+                            try{
+                                info.append("post call info start");
+                                Log.d(TAG, "post call info start");
+
+                                JSONObject json = new JSONObject();
+                                json.put("device_id",GetDeviceMacAddress.getMacAddress(context));
+                                json.put("phone_num",number);
+                                json.put("called_time", Calendar.getInstance().getTime());
+                                OKHttp http = new OKHttp();
+                                String result = http.post(context.getResources().getString(R.string.add_callUrl),json.toString());
+                                Log.d(TAG," register result : "+result);
+
+                                info.append("post call info end");
+                                Log.d(TAG, "post call info end");
+
+                            }catch(Exception e){
+                                Log.d(TAG," post call info exception "+e.getMessage());
+                                e.printStackTrace();
+                            }
+
+
                             Log.d(TAG, "Start make phone calling user : "+name+",  number : "+number);
                             info.append("Start make phone calling user : "+name+",  number : "+number+"\n");
                             this.context.startActivity(intent);
