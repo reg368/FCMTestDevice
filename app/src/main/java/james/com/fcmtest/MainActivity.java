@@ -16,9 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     static final int check = 111;
     private SpeechRecognizer recognizer;
+    private BluetoothHelper bluetoothHelper;
     private TextView info;
 
     @Override
@@ -43,19 +42,18 @@ public class MainActivity extends AppCompatActivity {
         //初始化lotcation
         GetUserLocation.getMylocation(this);
 
-        //voice dialog
-        Button dialog = (Button)findViewById(R.id.btnDialog);
+        //初始化藍芽物件
+        bluetoothHelper = new BluetoothHelper(this);
 
-        dialog.setOnClickListener(new View.OnClickListener() {
+        //藍芽掃描
+        Button scanbluetoote = (Button)findViewById(R.id.btnScanBlueToooth);
+        scanbluetoote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak up, Please!");
-                startActivityForResult(i, check);
 
             }
         });
+
 
         recognizer = SpeechRecognizer.createSpeechRecognizer(this);
 

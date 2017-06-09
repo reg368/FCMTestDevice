@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:text="Hello World!" />
     <Button
-        android:id="@+id/btnDialog"
+        android:id="@+id/btnScanBlueToooth"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:text="dialog voice"
+        android:text="Scan bluetooth"
         />
     <Button
         android:id="@+id/btnVoice"
